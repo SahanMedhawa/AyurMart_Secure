@@ -1,3 +1,9 @@
 **/node_modules
 **/package-lock.json
 **/.DS_Store
+**/.env
+**/.env.*
+!**/.env.example
+ayurmart-secrets*.env
+ayurmart-secrets.yaml
+Ayumart-Secure-secretVAR/
