@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cart
+  template:
+    metadata:
+      labels:
+        app: cart
+    spec:
+      containers:
+        - name: cart
+          image: hiranyap/ayurmart-microservice-cart
+          ports:
+            - containerPort: 7001
+          env:
+              - name: PORT
+                value: "7001"
+          envFrom:
+            - secretRef:
+                name: ayurmart-secrets
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-service
+spec:
+  selector:
+    app: cart
+  ports:
+    - name: http
+      protocol: TCP
+      port: 7001
+      targetPort: 7001
+  type: NodePort

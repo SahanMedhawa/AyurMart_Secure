@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userauth-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userauth
+  template:
+    metadata:
+      labels:
+        app: userauth
+    spec:
+      containers:
+        - name: userauth
+          image: hiranyap/ayurmart-microservice-userauth:latest
+          ports:
+            - containerPort: 7002
+          env:
+              - name: PORT
+                value: "7002"
+          envFrom:
+            - secretRef:
+                name: ayurmart-secrets
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: userauth-service
+spec:
+  selector:
+    app: userauth
+  ports:
+    - name: http
+      protocol: TCP
+      port: 7002
+      targetPort: 7002
+  type: NodePort

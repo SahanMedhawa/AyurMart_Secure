@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order
+  template:
+    metadata:
+      labels:
+        app: order
+    spec:
+      containers:
+        - name: order
+          image: hiranyap/ayurmart-microservice-order:latest
+          ports:
+            - containerPort: 7006
+          env:
+              - name: PORT
+                value: "7006"
+          envFrom:
+            - secretRef:
+                name: ayurmart-secrets
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+spec:
+  selector:
+    app: order
+  ports:
+    - name: http
+      protocol: TCP
+      port: 7006
+      targetPort: 7006
+  type: NodePort
