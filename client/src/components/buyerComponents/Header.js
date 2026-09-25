@@ -145,6 +145,8 @@ const Header = () => {
                                     <Box sx={{ flexGrow: 0, marginLeft: "auto" }} >
                                         <Button LinkComponent={Link} to="/login" sx={{ textDecoration: "none", color: "white" }}>Login</Button>
                                         <Button LinkComponent={Link} to="/signup" sx={{ textDecoration: "none", color: "white" }}>Register</Button>
+                                        <Button LinkComponent={Link} to="/sellerLogin" sx={{ textDecoration: "none", color: "white" }}>Seller Login</Button>
+                                        <Button LinkComponent={Link} to="/sellerSignup" sx={{ textDecoration: "none", color: "white" }}>Become a Seller</Button>
                                     </Box>
                                 </>
                             )}
