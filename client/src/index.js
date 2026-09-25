@@ -6,19 +6,22 @@ import App from './App';
 import { AuthContextProvider } from './context/AuthContext';
 import { ProductsContextProvider } from './context/ProductContext';
 import { SellerAuthContextProvider } from './context/SellerAuthContext';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
 
     <BrowserRouter>
         <React.StrictMode>
-            <AuthContextProvider>
-                <SellerAuthContextProvider>
-                    <ProductsContextProvider>
-                        <App />
-                    </ProductsContextProvider>
-                </SellerAuthContextProvider>
-            </AuthContextProvider>
+            <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+                <AuthContextProvider>
+                    <SellerAuthContextProvider>
+                        <ProductsContextProvider>
+                            <App />
+                        </ProductsContextProvider>
+                    </SellerAuthContextProvider>
+                </AuthContextProvider>
+            </GoogleOAuthProvider>
         </React.StrictMode>
     </BrowserRouter>
 

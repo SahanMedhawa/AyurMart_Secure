@@ -1,6 +1,7 @@
 import express from "express";
 import UserControllers from "../controllers/UserControllers.js";
 import AuthMiddlewares from "../middlewares/authMiddleware.js";
+import GoogleAuthController from "../controllers/GoogleAuthController.js";
 
 const router = express.Router();
 
@@ -21,5 +22,8 @@ router.put('/save-address', AuthMiddlewares.authMiddleware, UserControllers.save
 router.put('/block-user/:id', UserControllers.blockUser);
 router.put('/unblock-user/:id', UserControllers.unBlockUser);
 router.post("/verify",AuthMiddlewares.authMiddleware,UserControllers.verifyToken)
+
+// Google OAuth 2.0 route
+router.post("/google/login", GoogleAuthController.google);
 
 export default router;

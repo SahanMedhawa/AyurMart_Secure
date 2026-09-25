@@ -79,10 +79,29 @@ const signupSeller = async (req, res) => {
     }
 }
 
+// function to update product
+const updateProduct = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const product = req.body;
+    try {
+        const response = await axios.put(`http://product:7005/api/product/${id}`, product);
+        res.json({
+            message: 'Product updated',
+            product: response.data
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error updating product',
+            error: error.message
+        });
+    }
+});
+
 export default {
     getAllProducts,
     getaProduct,
     loginSeller,
     signupSeller,
-    createProdcut
+    createProdcut,
+    updateProduct
 }
