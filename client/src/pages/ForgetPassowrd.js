@@ -27,7 +27,7 @@ const ForgetPassword = () => {
                 }
 
             }).catch(error => {
-                setError(error.response.data.message);
+                setError(error.response?.data?.message || "Unable to send the reset link. Please try again later.");
             })
 
     }

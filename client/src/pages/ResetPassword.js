@@ -39,7 +39,7 @@ const ResetPassword = () => {
                     setError(response.message)
                 }
             }).catch(error => {
-                setError(error.response.data.message);
+                setError(error.response?.data?.message || "Unable to reset the password. Please try again later.");
             })
 
     }
@@ -74,13 +74,28 @@ const ResetPassword = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     onChange={(e) => setPassword(e.target.value)}
                                     value={password}
+                                    sx={{
+                                        '& input': {
+                                            width: 'auto',
+                                            margin: 0,
+                                            padding: '16.5px 14px',
+                                            boxSizing: 'content-box'
+                                        }
+                                    }}
                                     endAdornment={
                                         <InputAdornment position="end">
                                             <IconButton
                                                 aria-label="toggle password visibility"
-
                                                 onClick={handleClickShowPassword}
                                                 edge="end"
+                                                size="small"
+                                                type="button"
+                                                style={{
+                                                    width: '2rem',
+                                                    padding: 0,
+                                                    boxShadow: 'none',
+                                                    backgroundColor: 'transparent'
+                                                }}
                                             >
                                                 {showPassword ? <VisibilityOff /> : <Visibility />}
                                             </IconButton>
