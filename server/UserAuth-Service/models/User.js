@@ -10,7 +10,8 @@ var userSchema = new mongoose.Schema({
     },
     lastName:{
         type:String,
-        required:true,
+        required:false,
+        default: "",
     },
     email:{
         type:String,
@@ -19,12 +20,17 @@ var userSchema = new mongoose.Schema({
     },
     mobile:{
         type:String,
-        required:true,
+        required:false,
         unique:true,
+        sparse: true,
     },
     password:{
         type:String,
         required:true,
+    },
+    googleId:{
+        type:String,
+        default: "",
     },
     role: {
         type:String,
