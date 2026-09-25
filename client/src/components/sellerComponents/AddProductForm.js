@@ -1,10 +1,28 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link } from "react-router-dom";
-import { Box } from '@mui/material';
-
+import { Link, useNavigate } from "react-router-dom";
+import {
+    Box,
+    Typography,
+    Button,
+    Paper,
+    TextField,
+    Grid,
+    Alert,
+    CircularProgress,
+} from '@mui/material';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SpaIcon from '@mui/icons-material/Spa';
+import { useSellerAuthContext } from '../../hooks/useSellerAuthContext';
+import { useSellerLogout } from '../../hooks/useSellerLogout';
 
 const AddProductForm = () => {
+    const navigate = useNavigate();
+    const { seller } = useSellerAuthContext();
+    const { sellerlogout } = useSellerLogout();
+
     const [product, setProduct] = useState({
         title: '',
         description: '',
@@ -15,14 +33,25 @@ const AddProductForm = () => {
         images: [{ url: '' }],
     });
 
+    const [loading, setLoading] = useState(false);
+    const [status, setStatus] = useState({ type: '', message: '' });
+
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(product);
+        setLoading(true);
+        setStatus({ type: '', message: '' });
+
         try {
             await axios.post('http://localhost:7004/api/seller', product);
-            console.log('Product added successfully!');
+            setStatus({ type: 'success', message: 'Product added successfully! Redirecting to dashboard...' });
+            setTimeout(() => {
+                navigate('/seller-dashboard');
+            }, 1200);
         } catch (error) {
             console.error(error);
+            setStatus({ type: 'error', message: error.response?.data?.message || 'Failed to add product. Please check your inputs.' });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -40,64 +69,239 @@ const AddProductForm = () => {
     };
 
     return (
-        <Box sx={{ overflowX: "hidden" }}>
-            <div className="container">
-                <div className="sidebar">
-                    <div className="logo">
-                        <h1>AyurMart</h1>
-                    </div>
-                    <div className="menu">
-                        <Link to="/seller-dashboard">Seller Dashboard</Link>
-                        <Link to="/addProduct">Add Product</Link>
-                        <Link to="/profile">Profile</Link>
-                    </div>
-                </div>
-                <div className="content">
-                    <Box sx={{ overflowX: "hidden", marginTop: "96px", marginLeft: "400px", marginRight: "300px" }}>
-                        <h1 align='center'>Add Product</h1>
-                        <form onSubmit={handleSubmit}>
-                            <label>
-                                Title:
-                                <input type="text" name="title" value={product.title} onChange={handleChange} required />
-                            </label>
-                            <br />
-                            <label>
-                                Description:
-                                <textarea name="description" value={product.description} onChange={handleChange} required />
-                            </label>
-                            <br />
-                            <label>
-                                Price:
-                                <input type="number" name="price" value={product.price} onChange={handleChange} required />
-                            </label>
-                            <br />
-                            <label>
-                                Category:
-                                <input type="text" name="category" value={product.category} onChange={handleChange} required />
-                            </label>
-                            <br />
-                            <label>
-                                Brand:
-                                <input type="text" name="brand" value={product.brand} onChange={handleChange} required />
-                            </label>
-                            <br />
-                            <label>
-                                Quantity:
-                                <input type="number" name="quantity" value={product.quantity} onChange={handleChange} required />
-                            </label>
-                            <br />
-                            <label>
-                                Image URL:
-                                <input type="text" name="images" value={product.images[0]?.url} onChange={handleChange} required />
-                            </label>
-                            <br />
-                            <Box sx={{ marginLeft: "200px", marginRight: "300px" }}>
-                                <button type="submit">Add Product</button>
-                            </Box>
-                        </form>
+        <Box sx={{ display: 'flex', minHeight: 'calc(100vh - 70px)', marginTop: '70px', bgcolor: '#f8fafc' }}>
+            {/* Sidebar */}
+            <Box
+                sx={{
+                    width: { xs: '100%', sm: 240 },
+                    flexShrink: 0,
+                    backgroundColor: '#063970',
+                    color: 'white',
+                    p: 3,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    boxShadow: '2px 0 8px rgba(0,0,0,0.1)',
+                }}
+            >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 4 }}>
+                    <SpaIcon sx={{ color: '#66bb6a', fontSize: 28 }} />
+                    <Typography variant="h6" sx={{ color: 'white', fontWeight: 700, letterSpacing: 1 }}>
+                        Seller Portal
+                    </Typography>
+                </Box>
+
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                    <Button
+                        component={Link}
+                        to="/seller-dashboard"
+                        startIcon={<DashboardIcon />}
+                        sx={{
+                            color: 'rgba(255,255,255,0.85)',
+                            justifyContent: 'flex-start',
+                            textTransform: 'none',
+                            fontWeight: 500,
+                            borderRadius: 1.5,
+                            px: 2,
+                            py: 1,
+                            '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)', color: 'white' },
+                        }}
+                    >
+                        Dashboard
+                    </Button>
+                    <Button
+                        component={Link}
+                        to="/addProduct"
+                        startIcon={<AddCircleOutlineIcon />}
+                        sx={{
+                            color: 'white',
+                            backgroundColor: 'rgba(255,255,255,0.15)',
+                            justifyContent: 'flex-start',
+                            textTransform: 'none',
+                            fontWeight: 600,
+                            borderRadius: 1.5,
+                            px: 2,
+                            py: 1,
+                            '&:hover': { backgroundColor: 'rgba(255,255,255,0.25)' },
+                        }}
+                    >
+                        Add Product
+                    </Button>
+                </Box>
+
+                {seller && (
+                    <Box sx={{ mt: 'auto', pt: 3, borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+                        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)', display: 'block' }}>
+                            Logged in as:
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: 'white', fontWeight: 600, mb: 2, wordBreak: 'break-all' }}>
+                            {seller.email}
+                        </Typography>
+                        <Button
+                            onClick={() => sellerlogout()}
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                            sx={{
+                                color: 'white',
+                                borderColor: 'rgba(255,255,255,0.4)',
+                                textTransform: 'none',
+                                '&:hover': { borderColor: 'white', backgroundColor: 'rgba(255,255,255,0.1)' },
+                            }}
+                        >
+                            Log Out
+                        </Button>
                     </Box>
-                </div>
-            </div>
+                )}
+            </Box>
+
+            {/* Main content area */}
+            <Box sx={{ flexGrow: 1, p: { xs: 2, md: 4 }, minWidth: 0, display: 'flex', justifyContent: 'center' }}>
+                <Box sx={{ maxWidth: 800, width: '100%' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                        <Button
+                            component={Link}
+                            to="/seller-dashboard"
+                            startIcon={<ArrowBackIcon />}
+                            sx={{ textTransform: 'none', color: '#475569', mr: 2 }}
+                        >
+                            Back to Inventory
+                        </Button>
+                    </Box>
+
+                    <Paper sx={{ p: { xs: 3, md: 4 }, borderRadius: 2, boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+                        <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e293b', mb: 1 }}>
+                            Add New Product
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                            Fill in the product details to publish it on the marketplace
+                        </Typography>
+
+                        {status.message && (
+                            <Alert severity={status.type} sx={{ mb: 3 }}>
+                                {status.message}
+                            </Alert>
+                        )}
+
+                        <form onSubmit={handleSubmit}>
+                            <Grid container spacing={3}>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        label="Product Title"
+                                        name="title"
+                                        value={product.title}
+                                        onChange={handleChange}
+                                        required
+                                        fullWidth
+                                        placeholder="e.g., Organic Ashwagandha Powder"
+                                    />
+                                </Grid>
+
+                                <Grid item xs={12}>
+                                    <TextField
+                                        label="Description"
+                                        name="description"
+                                        value={product.description}
+                                        onChange={handleChange}
+                                        required
+                                        fullWidth
+                                        multiline
+                                        rows={4}
+                                        placeholder="Describe the product, benefits, and usage instructions..."
+                                    />
+                                </Grid>
+
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        label="Price (Rs.)"
+                                        name="price"
+                                        type="number"
+                                        value={product.price}
+                                        onChange={handleChange}
+                                        required
+                                        fullWidth
+                                        inputProps={{ min: 0, step: "1" }}
+                                    />
+                                </Grid>
+
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        label="Quantity in Stock"
+                                        name="quantity"
+                                        type="number"
+                                        value={product.quantity}
+                                        onChange={handleChange}
+                                        required
+                                        fullWidth
+                                        inputProps={{ min: 0 }}
+                                    />
+                                </Grid>
+
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        label="Category"
+                                        name="category"
+                                        value={product.category}
+                                        onChange={handleChange}
+                                        required
+                                        fullWidth
+                                        placeholder="e.g., Herbs, Oils, Skincare"
+                                    />
+                                </Grid>
+
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        label="Brand"
+                                        name="brand"
+                                        value={product.brand}
+                                        onChange={handleChange}
+                                        required
+                                        fullWidth
+                                        placeholder="e.g., Siddhalepa, Link Natural"
+                                    />
+                                </Grid>
+
+                                <Grid item xs={12}>
+                                    <TextField
+                                        label="Image URL"
+                                        name="images"
+                                        value={product.images[0]?.url}
+                                        onChange={handleChange}
+                                        required
+                                        fullWidth
+                                        placeholder="https://example.com/image.jpg"
+                                        helperText="Provide a direct public link to the product photo"
+                                    />
+                                </Grid>
+
+                                <Grid item xs={12} sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
+                                    <Button
+                                        component={Link}
+                                        to="/seller-dashboard"
+                                        variant="outlined"
+                                        color="inherit"
+                                        sx={{ textTransform: 'none' }}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        variant="contained"
+                                        disabled={loading}
+                                        sx={{
+                                            backgroundColor: '#2e7d32',
+                                            textTransform: 'none',
+                                            px: 4,
+                                            '&:hover': { backgroundColor: '#1b5e20' }
+                                        }}
+                                    >
+                                        {loading ? <CircularProgress size={24} color="inherit" /> : 'Publish Product'}
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </form>
+                    </Paper>
+                </Box>
+            </Box>
         </Box>
     );
 };
