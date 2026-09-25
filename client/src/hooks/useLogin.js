@@ -31,7 +31,7 @@ export const useLogin = () => {
 
             }).catch(error => {
                 setIsLoading(false);
-                setError(error.response.data.message);
+                setError(error.response?.data?.message || "Unable to connect to the authentication service.");
             })
 
     }

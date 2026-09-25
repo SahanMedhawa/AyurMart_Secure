@@ -1,7 +1,6 @@
 import nodemailer from 'nodemailer';
-import asyncHandler from 'express-async-handler';
 
-const sendEmail = asyncHandler(async (data, req, res) => {
+const sendEmail = async (data) => {
     let transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 587,
@@ -27,6 +26,6 @@ const sendEmail = asyncHandler(async (data, req, res) => {
     // Preview only available when sending through an Ethereal account
     console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
     // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-});
+};
 
 export default sendEmail;

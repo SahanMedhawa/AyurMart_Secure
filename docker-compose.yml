@@ -8,7 +8,6 @@ services:
     env_file:
       - ./server/UserAuth-Service/.env
     environment:
-      MONGOOSE_URI: mongodb://db/store
       PORT: 7002
     networks:
       ayurmart-network:
@@ -20,7 +19,6 @@ services:
     env_file:
       - ./server/Shopping-cart/.env
     environment:
-      MONGOOSE_URI: mongodb://db/store
       PORT: 7001
     networks:
       ayurmart-network:
@@ -32,7 +30,6 @@ services:
     env_file:
       - ./server/Product-Service/.env
     environment:
-      MONGOOSE_URI: mongodb://db/store
       PORT: 7005
     networks:
       ayurmart-network:
@@ -44,7 +41,6 @@ services:
     env_file:
       - ./server/Order-Service/.env
     environment:
-      MONGOOSE_URI: mongodb://db/store
       PORT: 7006
     networks:
       ayurmart-network:
@@ -56,7 +52,6 @@ services:
     env_file:
       - ./server/Coupon-Service/.env
     environment:
-      MONGOOSE_URI: mongodb://db/store
       PORT: 7003
     networks:
       ayurmart-network:
@@ -69,12 +64,12 @@ services:
     env_file:
       - ./server/Seller-Service/.env
     environment:
-      MONGOOSE_URI: mongodb://db/store
       PORT: 7004
     networks:
       ayurmart-network:
   
   web:
+    profiles: ["frontend"]
     build: ./client
     ports:
       - "3000:3000"
