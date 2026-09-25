@@ -1,4 +1,4 @@
-FROM node:14.16.0-alpine3.13
+FROM node:18-alpine
 
 WORKDIR /app/AYURMART-Microservice/Server/Coupon-Service
 
