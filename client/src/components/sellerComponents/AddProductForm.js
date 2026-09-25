@@ -15,8 +15,11 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SpaIcon from '@mui/icons-material/Spa';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { Card, CardMedia } from '@mui/material';
 import { useSellerAuthContext } from '../../hooks/useSellerAuthContext';
 import { useSellerLogout } from '../../hooks/useSellerLogout';
+import { cleanImageUrl } from '../../utils/imageUtils';
 
 const AddProductForm = () => {
     const navigate = useNavigate();
@@ -35,14 +38,24 @@ const AddProductForm = () => {
 
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState({ type: '', message: '' });
+    const [googleLinkConverted, setGoogleLinkConverted] = useState(false);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
         setStatus({ type: '', message: '' });
 
+        const cleanedImages = product.images.map(img => ({
+            url: cleanImageUrl(img.url)
+        }));
+
+        const payload = {
+            ...product,
+            images: cleanedImages
+        };
+
         try {
-            await axios.post('http://localhost:7004/api/seller', product);
+            await axios.post('http://localhost:7004/api/seller', payload);
             setStatus({ type: 'success', message: 'Product added successfully! Redirecting to dashboard...' });
             setTimeout(() => {
                 navigate('/seller-dashboard');
@@ -59,9 +72,15 @@ const AddProductForm = () => {
         const { name, value } = event.target;
 
         if (name === "images") {
+            const cleaned = cleanImageUrl(value);
+            if (value.includes('google.') && value.includes('imgurl=')) {
+                setGoogleLinkConverted(true);
+            } else {
+                setGoogleLinkConverted(false);
+            }
             setProduct({
                 ...product,
-                images: [{ url: value }],
+                images: [{ url: cleaned }],
             });
         } else {
             setProduct({ ...product, [name]: value });
@@ -182,6 +201,16 @@ const AddProductForm = () => {
                             </Alert>
                         )}
 
+                        {googleLinkConverted && (
+                            <Alert
+                                icon={<CheckCircleOutlineIcon fontSize="inherit" />}
+                                severity="info"
+                                sx={{ mb: 3 }}
+                            >
+                                Google Images link detected! The direct image URL was automatically extracted and applied.
+                            </Alert>
+                        )}
+
                         <form onSubmit={handleSubmit}>
                             <Grid container spacing={3}>
                                 <Grid item xs={12}>
@@ -262,16 +291,37 @@ const AddProductForm = () => {
 
                                 <Grid item xs={12}>
                                     <TextField
-                                        label="Image URL"
+                                        label="Image URL (Direct link or Google image search link)"
                                         name="images"
                                         value={product.images[0]?.url}
                                         onChange={handleChange}
                                         required
                                         fullWidth
-                                        placeholder="https://example.com/image.jpg"
-                                        helperText="Provide a direct public link to the product photo"
+                                        placeholder="https://example.com/image.jpg or Google Images search URL"
+                                        helperText="Paste direct image URLs (.jpg, .png, etc.) or Google Images search links (auto-extracted)"
                                     />
                                 </Grid>
+
+                                {product.images[0]?.url && (
+                                    <Grid item xs={12}>
+                                        <Typography variant="subtitle2" sx={{ mb: 1, color: '#475569' }}>
+                                            Image Preview:
+                                        </Typography>
+                                        <Card sx={{ maxWidth: 220, p: 1, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                                            <CardMedia
+                                                component="img"
+                                                height="180"
+                                                image={product.images[0].url}
+                                                alt="Preview"
+                                                sx={{ objectFit: 'contain' }}
+                                                onError={(e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.src = 'https://placehold.co/300x300?text=Invalid+Image+URL';
+                                                }}
+                                            />
+                                        </Card>
+                                    </Grid>
+                                )}
 
                                 <Grid item xs={12} sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
                                     <Button

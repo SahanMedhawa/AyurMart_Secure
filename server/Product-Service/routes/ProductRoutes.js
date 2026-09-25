@@ -34,7 +34,7 @@ router.put('/upload/:id',
 router.get('/:id', ProductController.getaProduct);
 router.get('/', ProductController.getAllProducts);
 router.put('/rating', verifyToken, ProductController.rating);
-router.put('/:id', verifyToken, ProductController.updateProduct);
+router.put('/:id', ProductController.updateProduct);
 router.put("/", ProductController.bulkUpdate)
 router.delete('/:id', ProductController.deleteProduct);
 router.post('/', ProductController.createProduct);

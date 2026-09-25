@@ -19,10 +19,12 @@ import {
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import EditIcon from '@mui/icons-material/Edit';
 import SpaIcon from '@mui/icons-material/Spa';
 import { useProductsContext } from '../../hooks/useProductsContext';
 import { useSellerLogout } from '../../hooks/useSellerLogout';
 import { useSellerAuthContext } from '../../hooks/useSellerAuthContext';
+import { cleanImageUrl } from '../../utils/imageUtils';
 
 const SellerDashboard = () => {
     const { products, dispatch } = useProductsContext();
@@ -218,62 +220,85 @@ const SellerDashboard = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {products.map((product) => (
-                                    <TableRow key={product._id} hover>
-                                        <TableCell sx={{ maxWidth: 220 }}>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                {product.images && product.images.length > 0 && product.images[0].url ? (
-                                                    <CardMedia
-                                                        component="img"
-                                                        image={product.images[0].url}
-                                                        alt={product.title}
-                                                        sx={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 1 }}
-                                                    />
-                                                ) : (
-                                                    <Box sx={{ width: 48, height: 48, bgcolor: '#e2e8f0', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                        <SpaIcon sx={{ color: '#94a3b8' }} />
-                                                    </Box>
-                                                )}
-                                                <Link to={`/product/${product._id}`} style={{ textDecoration: 'none', color: '#0f172a' }}>
-                                                    <Typography variant="body2" sx={{ fontWeight: 600, '&:hover': { color: '#063970' } }}>
-                                                        {product.title}
+                                {products.map((product) => {
+                                    const cleanedImgUrl = product.images && product.images.length > 0 && product.images[0].url
+                                        ? cleanImageUrl(product.images[0].url)
+                                        : '';
+
+                                    return (
+                                        <TableRow key={product._id} hover>
+                                            <TableCell sx={{ maxWidth: 220 }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                    {cleanedImgUrl ? (
+                                                        <CardMedia
+                                                            component="img"
+                                                            image={cleanedImgUrl}
+                                                            alt={product.title}
+                                                            sx={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 1 }}
+                                                            onError={(e) => {
+                                                                e.target.onerror = null;
+                                                                e.target.src = 'https://placehold.co/100x100?text=No+Img';
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <Box sx={{ width: 48, height: 48, bgcolor: '#e2e8f0', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                            <SpaIcon sx={{ color: '#94a3b8' }} />
+                                                        </Box>
+                                                    )}
+                                                    <Link to={`/product/${product._id}`} style={{ textDecoration: 'none', color: '#0f172a' }}>
+                                                        <Typography variant="body2" sx={{ fontWeight: 600, '&:hover': { color: '#063970' } }}>
+                                                            {product.title}
+                                                        </Typography>
+                                                    </Link>
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Chip label={product.category || 'General'} size="small" variant="outlined" />
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 600, color: '#0f172a' }}>
+                                                Rs. {product.price}.00
+                                            </TableCell>
+                                            <TableCell>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                    <Rating value={Number(product.totalrating) || 0} size="small" readOnly />
+                                                    <Typography variant="caption" color="text.secondary">
+                                                        ({product.ratings ? product.ratings.length : 0})
                                                     </Typography>
-                                                </Link>
-                                            </Box>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Chip label={product.category || 'General'} size="small" variant="outlined" />
-                                        </TableCell>
-                                        <TableCell sx={{ fontWeight: 600, color: '#0f172a' }}>
-                                            Rs. {product.price}.00
-                                        </TableCell>
-                                        <TableCell>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                                <Rating value={Number(product.totalrating) || 0} size="small" readOnly />
-                                                <Typography variant="caption" color="text.secondary">
-                                                    ({product.ratings ? product.ratings.length : 0})
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell sx={{ maxWidth: 250 }}>
+                                                <Typography variant="body2" color="text.secondary" noWrap>
+                                                    {product.description}
                                                 </Typography>
-                                            </Box>
-                                        </TableCell>
-                                        <TableCell sx={{ maxWidth: 250 }}>
-                                            <Typography variant="body2" color="text.secondary" noWrap>
-                                                {product.description}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell sx={{ textAlign: 'center' }}>
-                                            <Button
-                                                variant="outlined"
-                                                color="error"
-                                                size="small"
-                                                startIcon={<DeleteOutlineIcon />}
-                                                onClick={() => handleDelete(product._id)}
-                                                sx={{ textTransform: 'none' }}
-                                            >
-                                                Delete
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                            </TableCell>
+                                            <TableCell sx={{ textAlign: 'center' }}>
+                                                <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                                                    <Button
+                                                        component={Link}
+                                                        to={`/editProduct/${product._id}`}
+                                                        variant="outlined"
+                                                        color="primary"
+                                                        size="small"
+                                                        startIcon={<EditIcon />}
+                                                        sx={{ textTransform: 'none' }}
+                                                    >
+                                                        Edit
+                                                    </Button>
+                                                    <Button
+                                                        variant="outlined"
+                                                        color="error"
+                                                        size="small"
+                                                        startIcon={<DeleteOutlineIcon />}
+                                                        onClick={() => handleDelete(product._id)}
+                                                        sx={{ textTransform: 'none' }}
+                                                    >
+                                                        Delete
+                                                    </Button>
+                                                </Box>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
                             </TableBody>
                         </Table>
                     </TableContainer>

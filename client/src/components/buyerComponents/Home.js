@@ -22,6 +22,7 @@ import {
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import ClearIcon from '@mui/icons-material/Clear';
 import SpaIcon from '@mui/icons-material/Spa';
+import { cleanImageUrl } from '../../utils/imageUtils';
 
 const Home = () => {
     const items = [
@@ -281,9 +282,13 @@ const Home = () => {
                                             {product.images && product.images.length > 0 && product.images[0].url ? (
                                                 <CardMedia
                                                     component="img"
-                                                    image={product.images[0].url}
+                                                    image={cleanImageUrl(product.images[0].url)}
                                                     alt={product.title}
                                                     sx={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }}
+                                                    onError={(e) => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = 'https://placehold.co/300x300?text=No+Img';
+                                                    }}
                                                 />
                                             ) : (
                                                 <SpaIcon sx={{ fontSize: 64, color: "#cbd5e1" }} />

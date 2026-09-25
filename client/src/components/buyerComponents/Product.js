@@ -6,7 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-
+import { cleanImageUrl } from '../../utils/imageUtils';
 
 const Product = () => {
     const { user } = useAuthContext();
@@ -25,8 +25,16 @@ const Product = () => {
         fetch(`http://localhost:7005/api/product/${productId}`)
             .then((res) => res.json())
             .then((data) => {
+                if (data && data.images) {
+                    data.images = data.images.map(img => ({
+                        ...img,
+                        url: cleanImageUrl(img.url)
+                    }));
+                }
                 setProduct(data);
-                setSelectedImage(data.images[0].url);
+                if (data && data.images && data.images.length > 0) {
+                    setSelectedImage(cleanImageUrl(data.images[0].url));
+                }
             })
             .catch((err) => console.log(err));
     }, [productId]);
@@ -99,7 +107,17 @@ const Product = () => {
                 <>
                     <Grid item xs={12} md={3}>
                         <Card sx={{ p: "20px" }}>
-                            <CardMedia component="img" height="100%" image={selectedImage} alt={product.title} sx={{ width: '100%' }} />
+                            <CardMedia
+                                component="img"
+                                height="100%"
+                                image={selectedImage}
+                                alt={product.title}
+                                sx={{ width: '100%', objectFit: 'contain' }}
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = 'https://placehold.co/400x400?text=Image+Not+Found';
+                                }}
+                            />
                             {product.images.length > 1 && (
                                 <Grid container spacing={1} mt={2}>
                                     {product.images.map((image) => (

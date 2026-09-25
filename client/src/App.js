@@ -17,6 +17,7 @@ import CheckoutSuccess from "./components/buyerComponents/CheckoutSuccess";
 import NotFound from "./components/buyerComponents/NotFound";
 import SellerDashboard from "./components/sellerComponents/SellerDashboard";
 import AddProductForm from "./components/sellerComponents/AddProductForm";
+import EditProductForm from "./components/sellerComponents/EditProductForm";
 import AdminDashboard from "./components/adminComponents/AdminDashboard";
 import Payment from "./components/buyerComponents/Payment";
 import SellerSignup from "./pages/SellerSignup";
@@ -46,6 +47,7 @@ function App() {
                     <Route path="/checkout-success" element={<CheckoutSuccess/>} exact></Route>
                     <Route path="/seller-dashboard" element={seller ? <SellerDashboard/> : <Navigate to="/sellerLogin"></Navigate>} exact></Route>
                     <Route path="/addProduct" element={seller ? <AddProductForm/> : <Navigate to="/sellerLogin"></Navigate>} exact></Route>
+                    <Route path="/editProduct/:id" element={seller ? <EditProductForm/> : <Navigate to="/sellerLogin"></Navigate>} exact></Route>
                     <Route path="/admin-dashboard" element={user ? <AdminDashboard /> :<Navigate to="/login"></Navigate>} exact></Route>
                     <Route path="/sellerSignup" element={!seller ? <SellerSignup/> : <Navigate to="/seller-dashboard"></Navigate>} exact></Route>
                     <Route path="/sellerLogin" element={!seller ? <SellerLogin/> : <Navigate to="/seller-dashboard"></Navigate>} exact></Route>
