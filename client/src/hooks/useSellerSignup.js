@@ -10,25 +10,23 @@ export const useSellerSignup = () => {
       setIsLoading(true)
       setError(null)
   
-      const response = await fetch('http://localhost:7004/api/seller/signup', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ firstName, lastName, email, mobile, address, password })
-      })
-      const json = await response.json()
-  
-      if (!response.ok) {
-        setIsLoading(false)
-        setError(json.error)
-      }
-      if (response.ok) {
-        // save the user to local storage
-        localStorage.setItem('seller', JSON.stringify(json))
-  
-        // update the auth context
-        dispatch({type: 'LOGIN', payload: json})
-  
-        // update loading state
+      try {
+        const response = await fetch('http://localhost:7004/api/seller/signup', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ firstName, lastName, email, mobile, address, password })
+        })
+        const json = await response.json()
+
+        if (!response.ok) {
+          setError(json.error || json.message || 'Unable to create seller account.')
+        } else {
+          localStorage.setItem('seller', JSON.stringify(json))
+          dispatch({type: 'LOGIN', payload: json})
+        }
+      } catch (requestError) {
+        setError('Unable to connect to the seller service.')
+      } finally {
         setIsLoading(false)
       }
     }

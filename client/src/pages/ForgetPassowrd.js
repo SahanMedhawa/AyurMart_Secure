@@ -27,13 +27,13 @@ const ForgetPassword = () => {
                 }
 
             }).catch(error => {
-                setError(error.response.data.message);
+                setError(error.response?.data?.message || "Unable to send the reset link. Please try again later.");
             })
 
     }
 
     return (
-        <div>
+        <div style={{ marginTop: "96px" }}>
             <Box
                 component="form"
                 sx={{
@@ -51,7 +51,7 @@ const ForgetPassword = () => {
                     alignItems="center"
                     justifyContent="center"
                     justify="space-around"
-                    style={{ minHeight: '100vh' }}>
+                    style={{ minHeight: 'calc(100vh - 96px)' }}>
                     <div>
                         <Grid item xs={200}
                             style={{ padding: "2" }}

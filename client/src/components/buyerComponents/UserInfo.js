@@ -71,7 +71,7 @@ const UserInfo=()=>{
         <div>
         
         <Box>
-        <Typography sx={{width:800,margin:"auto",padding:"20px"}}
+        <Typography sx={{width:'100%', maxWidth:800,margin:"auto",padding:"20px"}}
       variant="h4">
         My Profile
       </Typography>

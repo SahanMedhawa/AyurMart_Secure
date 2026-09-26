@@ -5,11 +5,44 @@ import cloudinaryUploadImg from "../utils/cloudinary.js";
 import fs from 'fs';
 import axios from "axios";
 
+// Helper to extract direct image URL from Google Images links
+const cleanImageUrl = (rawUrl) => {
+    if (!rawUrl || typeof rawUrl !== 'string') return '';
+    const trimmed = rawUrl.trim();
+    if (trimmed.includes('google.') && (trimmed.includes('imgurl=') || trimmed.includes('/imgres'))) {
+        try {
+            const urlObj = new URL(trimmed);
+            const imgurl = urlObj.searchParams.get('imgurl') || urlObj.searchParams.get('mediaurl');
+            if (imgurl) {
+                return decodeURIComponent(imgurl);
+            }
+        } catch (e) {
+            const match = trimmed.match(/[?&](?:imgurl|mediaurl)=([^&]+)/i);
+            if (match && match[1]) {
+                return decodeURIComponent(match[1]);
+            }
+        }
+    }
+    return trimmed;
+};
+
+const normalizeProductImages = (images) => {
+    if (!images || !Array.isArray(images)) return images;
+    return images.map(img => {
+        if (typeof img === 'string') return { url: cleanImageUrl(img) };
+        if (img && img.url) return { ...img, url: cleanImageUrl(img.url) };
+        return img;
+    });
+};
+
 // function to add new product to the system
 const createProduct = asyncHandler(async (req, res) => {
     try {
         if (req.body.title) {
             req.body.slug = slugify(req.body.title);
+        }
+        if (req.body.images) {
+            req.body.images = normalizeProductImages(req.body.images);
         }
         const newProduct = await Product.create(req.body);
         res.json({
@@ -101,6 +134,9 @@ const updateProduct = asyncHandler(async (req, res) => {
     try {
         if (req.body.title) {
             req.body.slug = slugify(req.body.title);
+        }
+        if (req.body.images) {
+            req.body.images = normalizeProductImages(req.body.images);
         }
         const product = await Product.findByIdAndUpdate(id, req.body, { new: true });
         res.json(product);
