@@ -4,6 +4,7 @@ import slugify from "slugify";
 import cloudinaryUploadImg from "../utils/cloudinary.js";
 import fs from 'fs';
 import axios from "axios";
+import path from 'path';
 
 // Helper to extract direct image URL from Google Images links
 const cleanImageUrl = (rawUrl) => {
@@ -207,27 +208,50 @@ const rating = asyncHandler(async (req, res) => {
 });
 
 // Upload images
+
 const uploadImages = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { _id } = req.user;
+
     try {
-        const uploader = (path) => cloudinaryUploadImg(path, "images");
+        const uploader = (filePath) => cloudinaryUploadImg(filePath, "images");
         const urls = [];
         const files = req.files;
+
+        // Expected directory where Multer stores uploaded images
+        const uploadsDir = path.resolve("server/Product-Service/public/images");
+
         for (const file of files) {
-            const { path } = file;
-            const newPath = await uploader(path);
+
+            // Resolve the uploaded file path to an absolute path
+            const safeFilePath = path.resolve(file.path);
+
+            // Make sure the file is actually inside the expected upload directory
+            if (!safeFilePath.startsWith(uploadsDir + path.sep)) {
+                throw new Error("Attempted path traversal detected.");
+            }
+
+            // Upload the validated file
+            const newPath = await uploader(safeFilePath);
             urls.push(newPath);
-            fs.unlinkSync(path);
+
+            // Delete only the validated file
+            await fs.promises.unlink(safeFilePath);
         }
-        const findProduct = await Product.findByIdAndUpdate(id, {
-            images: urls.map((file) => {
-                return file;
-            })
-        }, {
-            new: true,
-        })
+
+        const findProduct = await Product.findByIdAndUpdate(
+            id,
+            {
+                images: urls.map((file) => {
+                    return file;
+                })
+            },
+            {
+                new: true,
+            }
+        );
+
         res.json(findProduct);
+
     } catch (error) {
         throw new Error(error);
     }
