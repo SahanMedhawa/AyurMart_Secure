@@ -1,7 +1,6 @@
 name: trivy
 
 on:
-  push:
   pull_request:
   schedule:
     - cron: "23 2 * * 3"
