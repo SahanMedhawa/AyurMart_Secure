@@ -10,7 +10,7 @@ export const useSellerSignup = () => {
       setIsLoading(true)
       setError(null)
   
-      const response = await fetch('http://localhost/7004/api/seller/signup', {
+      const response = await fetch('http://localhost:7004/api/seller/signup', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ firstName, lastName, email, mobile, address, password })
