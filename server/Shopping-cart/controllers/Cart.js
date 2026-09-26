@@ -158,32 +158,53 @@ const removeFromCart = asyncHandler(async (req, res) => {
 //get cart
 const getUserCart = asyncHandler(async (req, res) => {
     const { _id } = req.user;
+
     try {
-        const updatedCart = await Cart.updateOne(
-            { orderby: _id },
-            { $pull: { products: null } }
-        );
-        if (updatedCart.nModified === 0) {
-            return res.status(404).json({ message: "Cart not found" });
-        }
         const cart = await Cart.findOne({ orderby: _id });
-        
-        // populate products in the cart
+
+        // User does not have a cart yet
+        if (!cart) {
+            return res.json({
+                products: [],
+                cartTotal: 0,
+                tax: 0,
+                orderby: _id
+            });
+        }
+
+        // Remove invalid/null products
+        cart.products = cart.products.filter((product) => product != null);
+
+        // Populate products in the cart
         const populatedCart = await Promise.all(
             cart.products.map(async (product) => {
-                const _id = product.product;
-                const response = await axios.get(
-                    `http://product:7005/api/product/${_id}`
-                );
-                const data = response.data;
-                return { ...product.toObject(), product: data };
+                const productId = product.product;
+
+                try {
+                    const response = await axios.get(
+                        `http://product:7005/api/product/${productId}`
+                    );
+
+                    return {
+                        ...product.toObject(),
+                        product: response.data
+                    };
+                } catch (error) {
+                    console.log(`Product ${productId} could not be loaded`);
+                    return product.toObject();
+                }
             })
         );
-        res.json({ ...cart.toObject(), products: populatedCart });
+
+        res.json({
+            ...cart.toObject(),
+            products: populatedCart
+        });
+
     } catch (error) {
+        console.log(error);
         throw new Error(error);
     }
-
 });
 
 
