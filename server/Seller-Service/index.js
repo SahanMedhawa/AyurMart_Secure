@@ -4,11 +4,12 @@ import cors from "cors";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import SellerRoutes from "./routes/SellerRoutes.js";
-import cookieParser from "cookie-parser";
 
 dotenv.config();
 
 const app = express();
+// Disable X-Powered-By header to prevent framework information exposure
+app.disable("x-powered-by");
 const PARAMS = {
     useNewUrlParser: true, 
     useUnifiedTopology: true
@@ -20,7 +21,6 @@ const PORT = process.env.PORT || 5000;
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(cors());
-app.use(cookieParser());
 
 app.use("/api/seller", SellerRoutes);
 

@@ -53,6 +53,8 @@ const createUser = asyncHandler(async (req, res) => {
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             maxAge: 60 * 60 * 1 * 1000,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
         })
         res.status(200).json({
             _id,
@@ -100,6 +102,8 @@ const loginUser = asyncHandler(async (req, res) => {
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             maxAge: 60 * 60 * 1 * 1000,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
         })
         res.status(200).json({
             _id,
@@ -152,6 +156,8 @@ const loginAdmin = asyncHandler(async (req, res) => {
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             maxAge: 60 * 60 * 72 * 1000,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
         })
         res.status(200).json({
             _id,
@@ -293,7 +299,8 @@ const logout = asyncHandler(async (req, res) => {
     if (!user) {
         res.clearCookie("refreshToken", {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
         });
         return res.sendStatus(204);
     }
@@ -302,7 +309,8 @@ const logout = asyncHandler(async (req, res) => {
     });
     res.clearCookie("refreshToken", {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
     });
     return res.sendStatus(204);
 });
