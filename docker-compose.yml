@@ -5,8 +5,10 @@ services:
     build: ./server/UserAuth-Service
     ports:
       - "7002:7002"
+    env_file:
+      - ./server/UserAuth-Service/.env
     environment:
-      DB_URL: mongodb://db/store
+      PORT: 7002
     networks:
       ayurmart-network:
   
@@ -14,8 +16,10 @@ services:
     build: ./server/Shopping-cart
     ports:
       - "7001:7001"
+    env_file:
+      - ./server/Shopping-cart/.env
     environment:
-      DB_URL: mongodb://db/store
+      PORT: 7001
     networks:
       ayurmart-network:
   
@@ -23,8 +27,10 @@ services:
     build: ./server/Product-Service
     ports:
       - "7005:7005"
+    env_file:
+      - ./server/Product-Service/.env
     environment:
-      DB_URL: mongodb://db/store
+      PORT: 7005
     networks:
       ayurmart-network:
 
@@ -32,8 +38,10 @@ services:
     build: ./server/Order-Service
     ports:
       - "7006:7006"
+    env_file:
+      - ./server/Order-Service/.env
     environment:
-      DB_URL: mongodb://db/store
+      PORT: 7006
     networks:
       ayurmart-network:
   
@@ -41,8 +49,10 @@ services:
     build: ./server/Coupon-Service
     ports:
       - "7003:7003"
+    env_file:
+      - ./server/Coupon-Service/.env
     environment:
-      DB_URL: mongodb://db/store
+      PORT: 7003
     networks:
       ayurmart-network:
   
@@ -51,12 +61,15 @@ services:
     build: ./server/Seller-Service
     ports:
       - "7004:7004"
+    env_file:
+      - ./server/Seller-Service/.env
     environment:
-      DB_URL: mongodb://db/store
+      PORT: 7004
     networks:
       ayurmart-network:
   
   web:
+    profiles: ["frontend"]
     build: ./client
     ports:
       - "3000:3000"

@@ -30,12 +30,11 @@ const SellerSignup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         await signup(email, password, firstName, lastName, mobile, role)
-
     }
 
     return (
 
-        <div className="container">
+        <div className="container" style={{ marginTop: "96px" }}>
             <Box
                 component="form"
                 sx={{
@@ -52,109 +51,89 @@ const SellerSignup = () => {
                     direction="column"
                     alignItems="center"
                     justifyContent="center"
-                    justify="space-around"
-                    placeItems='center'
-                    style={{ minHeight: '100vh' }}>
-                    <div>
-                        <Grid item xs={200}
-                            style={{ padding: "2" }}
-                        >
-                            <Box
-                                textAlign="center">
-                                <h1>
-                                    Create a Buyer Account
-                                </h1>
-                            </Box>
-                        </Grid>
+                    style={{ minHeight: 'calc(100vh - 96px)', padding: '20px' }}>
+                    <Box sx={{
+                        maxWidth: 450,
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                    }}>
+                        <Box textAlign="center" sx={{ mb: 2 }}>
+                            <h1>
+                                Create a Seller Account
+                            </h1>
+                        </Box>
 
-                        <Grid item xs={200}
-                            style={{ padding: "10" }}>
-                            <TextField
-                                id="outlined-multiline-flexible"
-                                label="First Name"
-                                multiline
-                                maxRows={4}
-                                onChange={(e) => setfirstName(e.target.value)}
-                                value={firstName}
-                                style={{ width: '35ch' }}
-                            />
-                        </Grid>
+                        <TextField
+                            id="seller-register-firstname"
+                            label="First Name"
+                            multiline
+                            maxRows={4}
+                            onChange={(e) => setfirstName(e.target.value)}
+                            value={firstName}
+                            style={{ width: '100%' }}
+                        />
 
-                        <Grid item xs={200}
-                            style={{ padding: "10" }}>
-                            <TextField
-                                id="outlined-multiline-flexible"
-                                label="Last Name"
-                                multiline
-                                maxRows={4}
-                                onChange={(e) => setlastName(e.target.value)}
-                                value={lastName}
-                                style={{ width: '35ch' }}
-                            />
-                        </Grid>
+                        <TextField
+                            id="seller-register-lastname"
+                            label="Last Name"
+                            multiline
+                            maxRows={4}
+                            onChange={(e) => setlastName(e.target.value)}
+                            value={lastName}
+                            style={{ width: '100%' }}
+                        />
 
-                        <Grid item xs={200}
-                            style={{ padding: "10" }}>
-                            <TextField
-                                id="outlined-multiline-flexible"
-                                label="Email"
-                                multiline
-                                maxRows={4}
-                                onChange={(e) => setEmail(e.target.value)}
-                                value={email}
-                                style={{ width: '35ch' }}
-                            />
-                        </Grid>
+                        <TextField
+                            id="seller-register-email"
+                            label="Email"
+                            multiline
+                            maxRows={4}
+                            onChange={(e) => setEmail(e.target.value)}
+                            value={email}
+                            style={{ width: '100%' }}
+                        />
 
-                        <Grid item xs={200}
-                            style={{ padding: "10" }}>
-                            <TextField
-                                id="outlined-multiline-flexible"
-                                label="Mobile"
-                                multiline
-                                maxRows={4}
-                                onChange={(e) => setMobile(e.target.value)}
-                                value={mobile}
-                                style={{ width: '35ch' }}
-                            />
-                        </Grid>
+                        <TextField
+                            id="seller-register-mobile"
+                            label="Mobile"
+                            multiline
+                            maxRows={4}
+                            onChange={(e) => setMobile(e.target.value)}
+                            value={mobile}
+                            style={{ width: '100%' }}
+                        />
 
+                        <FormControl sx={{ m: 1, width: '100%' }} variant="outlined">
+                            <InputLabel htmlFor="seller-register-password">Password</InputLabel>
+                            <OutlinedInput
+                                id="seller-register-password"
+                                type={showPassword ? 'text' : 'password'}
+                                onChange={(e) => setPassword(e.target.value)}
+                                value={password}
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            edge="end"
+                                            style={{ width: '2rem', boxShadow: 'none', backgroundColor: 'transparent' }}
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                }
+                                label="Password" />
+                        </FormControl>
 
-
-                        <Grid item xs={20}>
-                            <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined">
-                                <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-                                <OutlinedInput
-                                    id="outlined-adornment-password"
-                                    type={showPassword ? 'text' : 'password'}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    value={password}
-                                    endAdornment={
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-
-                                                onClick={handleClickShowPassword}
-                                                edge="end"
-                                            >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    }
-                                    label="Password" />
-                            </FormControl>
-                        </Grid>
-
-                    </div>
-
-                    <Grid item xs={20}
-                        style={{ padding: "10" }}>
                         <Button variant="contained" disabled={isLoading} type="submit"
-                            sx={{ color: 'white', backgroundColor: "#063970", borderColor: 'green', width: '45ch', padding: 2, margin: 2, fontWeight: "bold" }}
+                            sx={{ color: 'white', backgroundColor: "#063970", borderColor: 'green', width: '100%', padding: 1.5, margin: 1, fontWeight: "bold" }}
                         >Signup</Button>
-                    </Grid>
-                    <p className="text" style={{ color: "#063970" }}>Already have an account? <span><Link to="/login" style={{ fontWeight: "bold", color: "#063970" }}>Sign in</Link></span></p>
-                    {error && <Alert variant="filled" severity="error" style={{ fontWeight: "bold", color: "#063970" }}>{error}</Alert>}
+
+                        <p className="text" style={{ color: "#063970", textAlign: "center" }}>Already have an account? <span><Link to="/login" style={{ fontWeight: "bold", color: "#063970" }}>Sign in</Link></span></p>
+                        {error && <Alert variant="filled" severity="error" style={{ fontWeight: "bold", width: "100%" }}>{error}</Alert>}
+                    </Box>
                 </Grid>
             </Box>
         </div>

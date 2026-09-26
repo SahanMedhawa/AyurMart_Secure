@@ -56,8 +56,8 @@ const UserProfile = () => {
 
   return (
     <div>
-      <Box sx={{ overflowX: "hidden", marginTop: "150px",marginBottom:"150px"}}>
-      <Box sx={{ width: 1200 ,margin:"auto"}}>
+      <Box sx={{ overflowX: "hidden", marginTop: "120px",marginBottom:"150px"}}>
+      <Box sx={{ width: '100%', maxWidth: 1200, margin:"auto", px: 2}}>
       <Grid  container
       direction="row"
       justifyContent="center"
