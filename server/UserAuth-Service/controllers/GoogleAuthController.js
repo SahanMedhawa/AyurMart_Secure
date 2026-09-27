@@ -87,7 +87,6 @@ const google = asyncHandler(async (req, res, next) => {
         firstName: firstName,
         lastName: lastName || "Google User",
         email: email,
-        mobile: "N/A",
         password: hashedPassword,
         googleId: googleId || "",
       });
