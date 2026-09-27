@@ -8,6 +8,10 @@ import ProductRoutes from "./routes/ProductRoutes.js";
 dotenv.config();
 
 const app = express();
+
+// Disable X-Powered-By header to prevent framework information exposure
+app.disable("x-powered-by");
+
 const PARAMS = {
     useNewUrlParser: true, 
     useUnifiedTopology: true
