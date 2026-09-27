@@ -23,7 +23,7 @@ const verifyToken = async (req, res, next) => {
         req.user = response.data.user;
         next();
     } catch (error) {
-        console.log(error)
+         console.error('Token verification failed');
         res.status(401).json({ message: 'Unauthorized' });
     }
 };
