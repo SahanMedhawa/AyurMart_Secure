@@ -6,7 +6,7 @@ const router = express.Router();
 
 const verifyToken = async (req, res, next) => {
     try {
-        console.log(req.headers);
+        // Avoid logging user-controlled request headers to prevent log injection
         const authHeader = req.headers.authorization;
         if (!authHeader) {
             throw new Error('Authorization header not present');
