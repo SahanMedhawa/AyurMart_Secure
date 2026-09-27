@@ -5,6 +5,14 @@ import axios from "axios";
 const userCart = asyncHandler(async (req, res) => {
     const { cart } = req.body;
     const { _id } = req.user;
+
+    // Validate that 'cart' is actually an array before using it in a loop,
+    // to prevent a Denial-of-Service attack via a manipulated 'length' property
+    if (!Array.isArray(cart) || cart.length === 0) {
+        res.status(400);
+        throw new Error("Invalid cart data: 'cart' must be a non-empty array");
+    }
+
     let total = 0;
     let tax = 0;
     try {
