@@ -1,1 +1,6 @@
 build/
+# ZAP scan reports
+*zap*report*.html
+report.html
+fullreport.html
+zap-report/
