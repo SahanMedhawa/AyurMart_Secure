@@ -1,0 +1,55 @@
+name: trivy
+
+on:
+  pull_request:
+  schedule:
+    - cron: "23 2 * * 3"
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  scan:
+    name: Scan ${{ matrix.name }} image
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: userauth
+            context: server/UserAuth-Service
+          - name: cart
+            context: server/Shopping-cart
+          - name: product
+            context: server/Product-Service
+          - name: order
+            context: server/Order-Service
+          - name: coupon
+            context: server/Coupon-Service
+          - name: seller
+            context: server/Seller-Service
+          - name: client
+            context: client
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t local/${{ matrix.name }}:${{ github.sha }} ${{ matrix.context }}
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
+        with:
+          image-ref: local/${{ matrix.name }}:${{ github.sha }}
+          format: sarif
+          output: trivy-${{ matrix.name }}.sarif
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-${{ matrix.name }}.sarif
+          category: trivy-${{ matrix.name }}

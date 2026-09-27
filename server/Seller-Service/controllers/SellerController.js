@@ -8,7 +8,7 @@ const getaProduct = asyncHandler(async (req, res) => {
     const { id } = req.params;
     try {
         const response = await axios.get(`http://product:7005/api/product/${id}`)
-        res.send(response.data)
+        res.status(200).json(response.data)
     } catch (error) {
         throw new Error(error);
     }
@@ -18,7 +18,7 @@ const getaProduct = asyncHandler(async (req, res) => {
 const getAllProducts = asyncHandler(async (req, res) => {
     try {
         const response = await axios.get(`http://product:7005/api/product/`)
-        res.send(response.data)
+        res.status(200).json(response.data)
 
     } catch (error) {
         throw new Error(error);
