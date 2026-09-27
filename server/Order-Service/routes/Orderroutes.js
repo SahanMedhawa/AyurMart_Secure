@@ -6,7 +6,7 @@ const router = express.Router();
 
 const verifyToken = async (req, res, next) => {
     try {
-        console.log(req.headers);
+        // Avoid logging user-controlled request headers to prevent log injection
         const authHeader = req.headers.authorization;
         if (!authHeader) {
             throw new Error('Authorization header not present');
@@ -23,7 +23,7 @@ const verifyToken = async (req, res, next) => {
         req.user = response.data.user;
         next();
     } catch (error) {
-        console.log(error)
+         console.error('Token verification failed');
         res.status(401).json({ message: 'Unauthorized' });
     }
 };

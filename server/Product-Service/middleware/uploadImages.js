@@ -32,23 +32,57 @@ const multerFilter = (req, file, cb) =>{
 const uploadPhoto = multer({
     storage: multerStorage,
     fileFilter: multerFilter,
-    limits: { fieldSize: 2000000 },
+    limits: { fileSize: 2000000 },
 });
 
 const productImgResize = async (req, res, next) => {
-    if(!req.files){
+    if (!req.files) {
         return next();
     }
-    await Promise.all(req.files.map(async (file) => {
-        await sharp(file.path)
-        .resize(300,300)
-        .toFormat('jpeg')
-        .jpeg({quality:90})
-        .toFile(`public/images/products/${file.filename}`);
 
-        fs.unlinkSync(`public/images/products/${file.filename}`);
-    
+    const uploadsDir = path.resolve(
+        path.join(__dirname, '../public/images/products')
+    );
+
+    const originalUploadsDir = path.resolve(
+        path.join(__dirname, '../public/images')
+    );
+
+    await Promise.all(req.files.map(async (file) => {
+
+        // Sanitize the filename to prevent directory traversal
+        const sanitizedFilename = path.basename(file.filename);
+
+        // Construct a safe output path
+        const safeOutputPath = path.resolve(
+            uploadsDir,
+            sanitizedFilename
+        );
+
+        // Ensure the output path remains inside the intended directory
+        if (!safeOutputPath.startsWith(uploadsDir + path.sep)) {
+            throw new Error('Attempted path traversal detected.');
+        }
+
+        // Resize and save the image using the validated path
+        await sharp(file.path)
+            .resize(300, 300)
+            .toFormat('jpeg')
+            .jpeg({ quality: 90 })
+            .toFile(safeOutputPath);
+
+        // Validate the original uploaded file path before deleting it
+        const safeInputPath = path.resolve(file.path);
+
+        if (!safeInputPath.startsWith(originalUploadsDir + path.sep)) {
+            throw new Error(
+                'Attempted path traversal detected during file deletion.'
+            );
+        }
+
+        await fs.promises.unlink(safeInputPath);
     }));
+
     next();
 };
 
